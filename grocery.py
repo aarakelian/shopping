@@ -137,5 +137,8 @@ if doc_file is not None:
     st.write("✅ **Counts of ingredients generated!**")
     st.text_area("Counts of ingredients", counts_answer, height=400)
 
+
+
+
 else:
     st.write("👆 Please upload a Word document (.docx) to get started!")
