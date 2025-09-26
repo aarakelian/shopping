@@ -1,7 +1,4 @@
 import streamlit as st
-
-st.write("Loaded secrets:", st.secrets)  
-
 from openai import OpenAI
 from docx import Document
 from prompts import *
