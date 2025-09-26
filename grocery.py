@@ -1,13 +1,11 @@
 import streamlit as st
-from dotenv import load_dotenv
 from openai import OpenAI
 from docx import Document
 from prompts import *
-import io
-# import os
+
 
 # Load environment variables
-load_dotenv()
+api_key = st.secrets["OPENAI_API_KEY"]
 
 st.title("Shopping List Wizard")
 
@@ -42,7 +40,7 @@ if doc_file is not None:
     st.write("🔄 **Processing your menu...**")
     
     # Initialize OpenAI client
-    client = OpenAI()
+    client = OpenAI(api_key=api_key)
     
     # Raw list of ingredients - 3 rounds
 
