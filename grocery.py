@@ -3,8 +3,7 @@ from openai import OpenAI
 from docx import Document
 from prompts import *
 
-
-# Load environment variables
+# Load api key variables (stored in Streamlit secrets)
 api_key = st.secrets["OPENAI_API_KEY"]
 
 st.title("Shopping List Wizard")
@@ -94,6 +93,7 @@ if doc_file is not None:
             ]
         )
     final_raw_answer = response.choices[0].message.content
+    st.text_area("Final raw list of ingredients", final_raw_answer, height=400)
     
     # Normalized list of ingredients
     with st.spinner("Normalized list of ingredients running..."):
