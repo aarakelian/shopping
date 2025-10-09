@@ -57,7 +57,7 @@ def run_raw_ingredients_round(round_num, total_rounds):
     with st.spinner(f"Raw list of ingredients {round_num}/{total_rounds} running..."):
         response = client.chat.completions.create(
             model="gpt-5",
-            reasoning_effort="medium",
+            reasoning_effort="lo",
             messages=[
                 {"role": "system", "content": raw_ingredients_system_prompt},
                 {"role": "user", "content": doc_text}
@@ -87,6 +87,7 @@ def save_word_doc_to_buffer(word_doc):
 
 # Load api key variables (stored in Streamlit secrets)
 api_key = st.secrets["OPENAI_API_KEY"]
+reasoning_effort = 'low'
 
 st.title("Shopping List Wizard")
 
@@ -118,7 +119,7 @@ if doc_file is not None:
     with st.spinner("Final raw list of ingredients running..."):
         response = client.chat.completions.create(
             model="gpt-5",
-            reasoning_effort="high", 
+            reasoning_effort=reasoning_effort, 
             messages=[
                 {"role": "system", "content": clean_raw_ingredients_system_prompt},
                 {"role": "user", "content": f"Cписок 1: {raw_answer1}\nCписок 2: {raw_answer2}\nCписок 3: {raw_answer3}"}
@@ -131,7 +132,7 @@ if doc_file is not None:
     with st.spinner("Normalized list of ingredients running..."):
         response = client.chat.completions.create(
             model="gpt-5",
-                reasoning_effort="medium", 
+                reasoning_effort=reasoning_effort, 
             messages=[
                 {"role": "system", "content": normalized_ingredients_system_prompt},
                 {"role": "user", "content": final_raw_answer}
@@ -143,7 +144,7 @@ if doc_file is not None:
     with st.spinner("Grouped list of ingredients running..."):
         response = client.chat.completions.create(
             model="gpt-5",
-            reasoning_effort="medium", 
+            reasoning_effort=reasoning_effort, 
             messages=[
                 {"role": "system", "content": grouped_ingredients_system_prompt},
                 {"role": "user", "content": normalized_answer}
@@ -157,7 +158,7 @@ if doc_file is not None:
     with st.spinner("Counts of ingredients running..."):
         response = client.chat.completions.create(
             model="gpt-5",
-            reasoning_effort="medium", 
+            reasoning_effort=reasoning_effort, 
             messages=[
                 {"role": "system", "content": counts_system_prompt},
                 {"role": "user", "content": f"Menu: {doc_text}\nGrouped list of ingredients: {grouped_answer}"}
@@ -185,7 +186,7 @@ if doc_file is not None:
     with st.spinner("Evaluation summary running..."):
         response = client.chat.completions.create(
             model="gpt-5",
-            reasoning_effort="medium",
+            reasoning_effort=reasoning_effort,
             messages=[{"role": "system", "content": evaluation_summary_system_prompt}, {"role": "user", "content": f"Результат 1: {answer1}\nРезультат 2: {answer2}\nРезультат 3: {answer3}\nРезультат 4: {answer4}\nРезультат 5: {answer5}\nРезультат 6: {answer6}"}]
         )
     evaluation_summary = response.choices[0].message.content
@@ -199,7 +200,7 @@ if doc_file is not None:
     st.download_button(
         "📥 Download Final Shopping List (Word Document)",
         doc_buffer.getvalue(),
-        file_name=f"Шопппинг.docx",
+        file_name=f"Шоппинг.docx",
         mime="application/vnd.openxmlformats-officedocument.wordprocessingml.document"
     )
 
