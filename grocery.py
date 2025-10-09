@@ -57,7 +57,7 @@ def run_raw_ingredients_round(round_num, total_rounds):
     with st.spinner(f"Raw list of ingredients {round_num}/{total_rounds} running..."):
         response = client.chat.completions.create(
             model="gpt-5",
-            reasoning_effort="lo",
+            reasoning_effort=reasoning_effort,
             messages=[
                 {"role": "system", "content": raw_ingredients_system_prompt},
                 {"role": "user", "content": doc_text}
@@ -70,7 +70,7 @@ def run_evaluator(round_num, total_rounds):
     with st.spinner(f"Evaluator {round_num}/{total_rounds} running..."):
         response = client.chat.completions.create(
             model="gpt-5",
-            reasoning_effort="medium",
+            reasoning_effort=reasoning_effort,
             messages=[
                 {"role": "system", "content": evaluator_system_prompt},
                 {"role": "user", "content": f"1) Меню: {doc_text}\n 2) Сгруппированный список ингредиентов: {grouped_answer}\n 3) Шоппинг-лист: {counts_answer}"}
