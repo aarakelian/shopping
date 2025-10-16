@@ -286,6 +286,20 @@ def verify_quantities(client: OpenAI, menu_text: str, df: pd.DataFrame) -> List[
 def aggregate_ingredients(ingredients: List[Dict]) -> pd.DataFrame:
     df = pd.DataFrame(ingredients)
     
+    # Clean data types to ensure they're hashable for drop_duplicates
+    def clean_field(field):
+        if pd.isna(field) or field is None:
+            return ""
+        if isinstance(field, (list, dict)):
+            return str(field)
+        return str(field)
+    
+    # Clean all fields used in duplicate detection
+    df['name'] = df['name'].apply(clean_field)
+    df['day'] = df['day'].apply(clean_field)
+    df['meal'] = df['meal'].apply(clean_field)
+    df['dish'] = df['dish'].apply(clean_field)
+    
     # Remove duplicates within same extraction
     df = df.drop_duplicates(subset=['name', 'day', 'meal', 'dish'])
     
@@ -311,12 +325,24 @@ def aggregate_ingredients(ingredients: List[Dict]) -> pd.DataFrame:
     if len(df) == 0:
         return pd.DataFrame(columns=['name', 'quantity', 'unit', 'day', 'meal', 'dish', 'category'])
     
+    # Convert day back to numeric for proper sorting
+    def parse_day(day_str):
+        try:
+            return int(day_str) if day_str.isdigit() else 0
+        except:
+            return 0
+    
+    df['day_numeric'] = df['day'].apply(parse_day)
+    
     aggregated = df.groupby(['name', 'unit'], as_index=False).agg({
         'quantity': 'sum',
-        'day': lambda x: sorted(set(x)),
+        'day_numeric': lambda x: sorted(set(x)),
         'meal': lambda x: list(set(x)),
         'dish': lambda x: list(set(x))
     })
+    
+    # Rename back to 'day' for consistency
+    aggregated = aggregated.rename(columns={'day_numeric': 'day'})
     
     aggregated['category'] = aggregated['name'].apply(classify_category)
     return aggregated
