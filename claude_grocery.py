@@ -366,7 +366,7 @@ def format_grocery_list(df: pd.DataFrame) -> str:
         for _, row in items.iterrows():
             days_str = ", ".join([f"Д{d}" for d in row['day']])
             meals_str = ", ".join(set(row['meal']))
-            dishes_str = "; ".join(set(row['dish'])[:3])
+            dishes_str = "; ".join(list(set(row['dish']))[:3])
             output.append(
                 f"- {row['name'].capitalize()} {row['quantity_display']} "
                 f"({days_str} {meals_str}: {dishes_str})"
