@@ -289,6 +289,28 @@ def aggregate_ingredients(ingredients: List[Dict]) -> pd.DataFrame:
     # Remove duplicates within same extraction
     df = df.drop_duplicates(subset=['name', 'day', 'meal', 'dish'])
     
+    # Clean and convert quantity to numeric
+    def clean_quantity(qty):
+        if pd.isna(qty) or qty is None:
+            return 0
+        if isinstance(qty, (int, float)):
+            return float(qty)
+        if isinstance(qty, str):
+            # Try to extract number from string
+            import re
+            numbers = re.findall(r'\d+\.?\d*', str(qty))
+            if numbers:
+                return float(numbers[0])
+        return 0
+    
+    df['quantity'] = df['quantity'].apply(clean_quantity)
+    
+    # Filter out rows with zero quantity
+    df = df[df['quantity'] > 0]
+    
+    if len(df) == 0:
+        return pd.DataFrame(columns=['name', 'quantity', 'unit', 'day', 'meal', 'dish', 'category'])
+    
     aggregated = df.groupby(['name', 'unit'], as_index=False).agg({
         'quantity': 'sum',
         'day': lambda x: sorted(set(x)),
